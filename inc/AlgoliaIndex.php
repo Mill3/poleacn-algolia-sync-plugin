@@ -69,9 +69,7 @@ class AlgoliaIndex
         $this->index_settings = $index_settings;
         $this->post_type = $index_settings['post_type'];
         $this->log = $log;
-
-        $this->log->info('Algolia index class : '. $index_name);
-
+        // $this->log->info('Algolia index class : '. $index_name);
         $this->run();
     }
 
