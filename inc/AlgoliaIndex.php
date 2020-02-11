@@ -53,7 +53,7 @@ class AlgoliaIndex
      *
      * @var object
      */
-    private $log;
+    public $log;
 
     /**
      * Constructor.
@@ -62,18 +62,16 @@ class AlgoliaIndex
      * @param object $algolia_client
      * @param array  $index_settings
      */
-    public function __construct($index_name, $algolia_client, $index_settings = array('config' => array()))
+    public function __construct($index_name, $algolia_client, $index_settings = array('config' => array()), $log)
     {
         $this->index_name = $index_name;
         $this->algolia_client = $algolia_client;
         $this->index_settings = $index_settings;
         $this->post_type = $index_settings['post_type'];
+        $this->log = $log;
 
-        // create logging
-        $this->log = new Logger($index_name);
-        $this->log->pushHandler(new StreamHandler(__DIR__."/debug-index-{$index_name}.log", Logger::DEBUG));
+        $this->log->info('Algolia index class : '. $index_name);
 
-        // add_action('wp_algolia_update_record', array($this, 'update_record_action'), 10, 2);
         $this->run();
     }
 

@@ -11,13 +11,13 @@ namespace WpAlgolia\Register;
 use WpAlgolia\RegisterAbstract as WpAlgoliaRegisterAbstract;
 use WpAlgolia\RegisterInterface as WpAlgoliaRegisterInterface;
 
-class Programs extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInterface
+class Formations extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInterface
 {
-    public $searchable_fields = array('post_title');
+    public $searchable_fields = array('post_title', 'content');
 
-    public $acf_fields = array('code', 'brochure', 'title', 'subtitle', 'body', 'why_title', 'why_subtitle', 'perspectives_title', 'perspectives_subtitle', 'verify_title');
+    public $acf_fields = array();
 
-    public $taxonomies = array('duration', 'programs_type', 'profile', 'condition', 'period');
+    public $taxonomies = array('sectors', 'regions', 'establishment_types');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {
@@ -29,8 +29,8 @@ class Programs extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInt
             'config'            => array(
                 'searchableAttributes'  => $this->searchableAttributes(),
                 'customRanking'         => array('asc(code)'),
-                'attributesForFaceting' => array('searchable(programs_type)', 'searchable(profile)', 'searchable(condition)', 'searchable(duration)'),
-                'queryLanguages'        => array('fr'),
+                'attributesForFaceting' => array('searchable(sectors)', 'searchable(regions)'),
+                'queryLanguages'        => array('fr', 'en'),
             ),
             array(
                'forwardToReplicas' => true,

@@ -15,7 +15,7 @@ abstract class RegisterAbstract
 {
     public $post_type;
 
-    public $index_name;
+    public $index_name_base;
 
     public $algolia_client;
 
@@ -23,31 +23,30 @@ abstract class RegisterAbstract
 
     public $index_settings;
 
+    public $locale;
+
     private $log;
 
-    public function __construct($post_type, $index_name, $algolia_client, $index_settings = null)
+    public function __construct($post_type, $index_name_base, $algolia_client, $index_settings = null)
     {
         // set class attributes
         $this->post_type = $post_type;
-        $this->index_name = $index_name;
+        $this->index_name_base = $index_name_base;
         $this->algolia_client = $algolia_client;
         $this->index_settings = $index_settings;
-
-        // instance Algolia index
-        $this->algolia_index = new \WpAlgolia\AlgoliaIndex($this->index_name, $this->algolia_client, $this->index_settings);
+        $this->locale = null;
 
         // create logging
-        $this->log = new Logger($index_name);
-        $this->log->pushHandler(new StreamHandler(__DIR__."/debug-{$index_name}.log", Logger::DEBUG));
+        $this->log = new Logger($index_name_base);
+        $this->log->pushHandler(new StreamHandler(__DIR__."/debug-{$post_type}.log", Logger::DEBUG));
 
         // Core's WP actions
-        // add_action("save_post_{$this->post_type}", array($this, 'save_post'), 10, 2);
         add_action('wp_insert_post', array($this, 'save_post'), 10, 3);
         add_action("delete_post_{$this->post_type}", array($this, 'delete_post'), 10, 2);
 
         // add bulk action to post type
-        add_filter("bulk_actions-edit-{$this->post_type}", array($this, 'register_bulk_update'), 10, 3);
-        add_filter("handle_bulk_actions-edit-{$this->post_type}", array($this, 'handle_bulk_update'), 10, 3);
+        // add_filter("bulk_actions-edit-{$this->post_type}", array($this, 'register_bulk_update'), 10, 3);
+        // add_filter("handle_bulk_actions-edit-{$this->post_type}", array($this, 'handle_bulk_update'), 10, 3);
 
         // add extra column in admin
         add_filter("manage_{$this->post_type}_posts_columns", array($this, 'manage_admin_columns'), 10, 3);
@@ -67,8 +66,7 @@ abstract class RegisterAbstract
 
     public function save_post($post_ID, $post)
     {
-        // do_action('wp_algolia_update_record', $post_ID);
-        $this->log->info('Updating ? '.print_r($post, true));
+        $this->log->info('Updating ? ' . print_r($post, true));
 
         if (wp_is_post_autosave($post)) {
             return;
@@ -80,7 +78,7 @@ abstract class RegisterAbstract
 
         if ('publish' !== $post->post_status) {
             $this->log->info('Removing record : '.$post_ID);
-            $this->algolia_index->delete($post_ID, $post);
+            $this->algolia_index($post_ID)->delete($post_ID, $post);
 
             return;
         }
@@ -88,7 +86,7 @@ abstract class RegisterAbstract
         // should push to index ?
         if (false === $this->show_in_index($post_ID)) {
             $this->log->info('Removing record : '.$post_ID);
-            $this->algolia_index->delete($post_ID, $post);
+            $this->algolia_index($post_ID)->delete($post_ID, $post);
 
             return;
         }
@@ -96,12 +94,12 @@ abstract class RegisterAbstract
         // pass all conditions, then save
         $this->log->info('Saving record : '.$post_ID);
 
-        $this->algolia_index->save($post_ID, $post);
+        $this->algolia_index($post_ID)->save($post_ID, $post);
     }
 
     public function delete_post($postID, $post)
     {
-        $this->algolia_index->delete($postID, $post);
+        $this->algolia_index()->delete($postID, $post);
     }
 
     public function register_bulk_update($bulk_actions)
@@ -119,14 +117,13 @@ abstract class RegisterAbstract
             if ($post) {
                 switch ($doaction) {
                     case 'wpalgolia_index_update':
-                        // should push to index ?
                         if (true === $this->show_in_index($post_ID)) {
-                            $this->algolia_index->save($post_ID, $post);
+                            $this->algolia_index($post_ID)->save($post_ID, $post);
                         }
                         break;
 
                     case 'wpalgolia_index_delete':
-                        $this->algolia_index->delete($post_ID);
+                        $this->algolia_index($post_ID)->delete($post_ID);
                         break;
                 }
             }
@@ -142,10 +139,10 @@ abstract class RegisterAbstract
         return $columns;
     }
 
-    public function manage_admin_column($column, $post_id)
+    public function manage_admin_column($column, $post_ID)
     {
         if ('in_index' === $column) {
-            $in_index = $this->algolia_index->record_exist($post_id);
+            $in_index = $this->algolia_index($post_ID)->record_exist($post_ID);
             echo $in_index ? '<span class="dashicons dashicons-yes-alt" style="color: #5468ff;"></span>' : '';
         }
     }
@@ -155,24 +152,19 @@ abstract class RegisterAbstract
         $posts = get_posts(array(
             'post_type'   => $this->get_post_type(),
             'numberposts' => -1,
-            'meta_query' => array(
+            'meta_query'  => array(
                 array(
                     'key'     => $this->index_settings['hidden_flag_field'],
                     'compare' => '=',
                     'value'   => 1,
-                )
+                ),
             ),
         ));
 
         // update each posts from current post type
         foreach ($posts as $key => $post) {
-            $this->algolia_index->save($post->ID, $post);
+            $this->algolia_index($post->ID)->save($post->ID, $post);
         }
-    }
-
-    public function save_all()
-    {
-        // TODO: implement for cli
     }
 
     /**
@@ -185,7 +177,26 @@ abstract class RegisterAbstract
      */
     public function show_in_index($post_ID)
     {
-        // return ACF field value
-        return get_field($this->index_settings['hidden_flag_field'], $post_ID);
+        // return ACF field value, defaults to true
+        if (\function_exists('get_field')) {
+            return get_field($this->index_settings['hidden_flag_field'], $post_ID);
+        } else {
+            return true;
+        }
+    }
+
+    private function set_index_name($post_ID)
+    {
+        if (\function_exists('pll_get_post_language')) {
+            $post_locale = pll_get_post_language($post_ID);
+            $this->locale = $post_locale ? $post_locale : pll_default_language('slug');
+        }
+
+        return implode('_', array($this->index_name_base, $this->locale));
+    }
+
+    private function algolia_index($post_ID)
+    {
+        return new \WpAlgolia\AlgoliaIndex($this->set_index_name($post_ID), $this->algolia_client, $this->index_settings, $this->log);
     }
 }

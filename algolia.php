@@ -1,11 +1,11 @@
 <?php
 
 /**
- * GitHub Plugin URI:  Mill3/cstj-algolia-sync-plugin
- * GitHub Plugin URI:  https://github.com/Mill3/cstj-algolia-sync-plugin
- * Plugin Name: CSTJ - Algolia Sync
+ * GitHub Plugin URI:  Mill3/poleacn-algolia-sync-plugin
+ * GitHub Plugin URI:  https://github.com/Mill3/poleacn-algolia-sync-plugin
+ * Plugin Name: Poleacn - Algolia Sync
  * Description: Sync data from Wordpress to Algolia
- * Version: 0.0.7
+ * Version: 0.0.8
  * Author Name: Mill3 Studio (Antoine Girard)
  *
  * @package CSTJ_Algolia_Sync
@@ -25,24 +25,19 @@ class Main {
 
     public function run() {
         $this->register();
-        $this->cli();
     }
 
     public static function search() {
-        return "foobar";
+        return null;
     }
 
     private function register() {
-        $registered_post_types['programs'] = new \WpAlgolia\Register\Posts('post', ALGOLIA_PREFIX . 'post', $this->algolia_client);
-        $registered_post_types['page'] = new \WpAlgolia\Register\Pages('page', ALGOLIA_PREFIX . 'page', $this->algolia_client);
-        $registered_post_types['post'] = new \WpAlgolia\Register\Programs('programs', ALGOLIA_PREFIX . 'programs', $this->algolia_client);
-    }
-
-    private function cli() {
-        // register cli commands
-        if (defined('WP_CLI') && WP_CLI) {
-            echo "cli should work!";
-        }
+        $registered_post_types['companies'] = new \WpAlgolia\Register\Companies('companies', ALGOLIA_PREFIX . 'companies', $this->algolia_client);
+        $registered_post_types['jobs'] = new \WpAlgolia\Register\Jobs('jobs', ALGOLIA_PREFIX . 'jobs', $this->algolia_client);
+        $registered_post_types['formations'] = new \WpAlgolia\Register\Formations('formations', ALGOLIA_PREFIX . 'formations', $this->algolia_client);
+        $registered_post_types['schools'] = new \WpAlgolia\Register\Schools('schools', ALGOLIA_PREFIX . 'schools', $this->algolia_client);
+        // $registered_post_types['page'] = new \WpAlgolia\Register\Pages('page', ALGOLIA_PREFIX . 'page', $this->algolia_client);
+        // $registered_post_types['post'] = new \WpAlgolia\Register\Programs('programs', ALGOLIA_PREFIX . 'programs', $this->algolia_client);
     }
 
 }
@@ -64,10 +59,12 @@ add_action(
         require_once __DIR__ . '/inc/AlgoliaIndex.php';
         require_once __DIR__ . '/inc/RegisterAbstract.php';
         require_once __DIR__ . '/inc/RegisterInterface.php';
-        require_once __DIR__ . '/post_types/Posts.php';
+        // require_once __DIR__ . '/post_types/Posts.php';
         require_once __DIR__ . '/post_types/Pages.php';
-        require_once __DIR__ . '/post_types/Programs.php';
-        // require_once __DIR__ . '/wp-cli.php';
+        require_once __DIR__ . '/post_types/Companies.php';
+        require_once __DIR__ . '/post_types/Jobs.php';
+        require_once __DIR__ . '/post_types/Formations.php';
+        require_once __DIR__ . '/post_types/Schools.php';
 
         // client
         $algoliaClient = \Algolia\AlgoliaSearch\SearchClient::create(ALGOLIA_APPLICATION_ID, ALGOLIA_ADMIN_API_KEY);
@@ -77,17 +74,5 @@ add_action(
 
         // run
         $instance->run();
-
-        // function wpalgolia_search() {
-        //     $instance->search();
-        // }
-
-        // // WP CLI commands.
-        // if (defined('WP_CLI') && WP_CLI) {
-        //     require_once 'inc/Commands.php';
-        //     $commands = new \WpAlgolia\Commands($indexRepository);
-        //     \WP_CLI::add_command('algolia', $commands);
-        // }
-
     }
 );

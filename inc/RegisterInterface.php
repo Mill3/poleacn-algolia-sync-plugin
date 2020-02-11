@@ -27,6 +27,4 @@ interface RegisterInterface
     public function manage_admin_columns($columns);
 
     public function manage_admin_column($column, $post_id);
-
-    public function save_all();
 }
