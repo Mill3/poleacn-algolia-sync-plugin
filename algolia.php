@@ -59,7 +59,9 @@ add_action(
         require_once __DIR__ . '/inc/AlgoliaIndex.php';
         require_once __DIR__ . '/inc/RegisterAbstract.php';
         require_once __DIR__ . '/inc/RegisterInterface.php';
-        // require_once __DIR__ . '/post_types/Posts.php';
+
+        // available post types
+        require_once __DIR__ . '/post_types/Posts.php';
         require_once __DIR__ . '/post_types/Pages.php';
         require_once __DIR__ . '/post_types/Companies.php';
         require_once __DIR__ . '/post_types/Jobs.php';
