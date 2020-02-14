@@ -45,8 +45,8 @@ abstract class RegisterAbstract
         add_action("delete_post_{$this->post_type}", array($this, 'delete_post'), 10, 2);
 
         // add bulk action to post type
-        // add_filter("bulk_actions-edit-{$this->post_type}", array($this, 'register_bulk_update'), 10, 3);
-        // add_filter("handle_bulk_actions-edit-{$this->post_type}", array($this, 'handle_bulk_update'), 10, 3);
+        add_filter("bulk_actions-edit-{$this->post_type}", array($this, 'register_bulk_update'), 10, 3);
+        add_filter("handle_bulk_actions-edit-{$this->post_type}", array($this, 'handle_bulk_update'), 10, 3);
 
         // add extra column in admin
         add_filter("manage_{$this->post_type}_posts_columns", array($this, 'manage_admin_columns'), 10, 3);
@@ -112,13 +112,16 @@ abstract class RegisterAbstract
 
     public function handle_bulk_update($redirect_to, $doaction, $post_ids)
     {
+        // print_r($post_ids);
+        // echo $doaction;
         foreach ($post_ids as $post_ID) {
             $post = get_post($post_ID);
             if ($post) {
                 switch ($doaction) {
                     case 'wpalgolia_index_update':
+                        // $this->algolia_index($post_ID)->save($post_ID, $post);
                         if (true === $this->show_in_index($post_ID)) {
-                            $this->algolia_index($post_ID)->save($post_ID, $post);
+                            $this->algolia_index($post->ID)->save($post->ID, $post);
                         }
                         break;
 
@@ -179,7 +182,8 @@ abstract class RegisterAbstract
     {
         // return ACF field value, defaults to true
         if (\function_exists('get_field')) {
-            return get_field($this->index_settings['hidden_flag_field'], $post_ID);
+            $value = get_field($this->index_settings['hidden_flag_field'], $post_ID);
+            return $value ? $value : true;
         } else {
             return true;
         }

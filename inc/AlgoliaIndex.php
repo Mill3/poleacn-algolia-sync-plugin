@@ -89,12 +89,13 @@ class AlgoliaIndex
     public function save($postID, $post)
     {
         $data = array(
-            'objectID'          => $this->index_objectID($postID),
+            'objectID'          => $this->index_objectID($post->ID),
             'post_title'        => $post->post_title,
             'post_thumbnail'    => get_the_post_thumbnail_url($post, 'post-thumbnail'),
             'excerpt'           => $this->prepareTextContent($post->post_excerpt),
             'content'           => $this->prepareTextContent($post->post_content),
             'url'               => get_post_permalink($post->ID),
+            'post_type'         => get_post_type($post->ID)
         );
 
         // append each custom field values
@@ -109,13 +110,14 @@ class AlgoliaIndex
 
             // if term was found, try to get extra custom fields values
             // TODO: move this in a class instance settings with $this->index_settings
-            if (isset($terms[0])) {
-                $term = $terms[0];
-                $data["{$taxonomy}_color"] = get_field('color', get_term_by('name', $term, $taxonomy));
-            }
+            // if (isset($terms[0])) {
+            //     $term = $terms[0];
+            //     $data["{$taxonomy}_color"] = get_field('color', get_term_by('name', $term, $taxonomy));
+            // }
         }
 
         $this->log->info('Saving object : '.$this->index_objectID($postID));
+        $this->log->info('Raw data : '. print_r($data, true));
 
         // save object
         $this->index->saveObject($data);
