@@ -100,7 +100,18 @@ class AlgoliaIndex
 
         // append each custom field values
         foreach ($this->index_settings['acf_fields'] as $key => $field) {
-            $data[$field] = $this->prepareTextContent(get_field($field, $postID));
+            $field_data = get_field($key, $postID);
+            if ( is_array($field) ) {
+                foreach ($field as $field_label) {
+                    if (count($field) === 1) {
+                        $data[$key] = $this->prepareTextContent($field_data->$field_label);
+                    } else {
+                        $data["{$key}_{$field_label}"] = $this->prepareTextContent($field_data->$field_label);
+                    }
+                }
+            } else {
+                $data[$key] = $this->prepareTextContent($field_data);
+            }
         }
 
         // append extra taxonomies
