@@ -102,19 +102,19 @@ class AlgoliaIndex
         foreach ($this->index_settings['acf_fields'] as $key => $field) {
             $field_data = get_field($key, $postID);
 
-            if(!$field_data) return;
-
-            if ( is_array($field) ) {
-                foreach ($field as $field_label) {
-                    if (count($field) === 1) {
-                        $data[$key] = $this->prepareTextContent($field_data->$field_label);
-                    } else {
-                        $data["{$key}_{$field_label}"] = $this->prepareTextContent($field_data->$field_label);
+            if($field_data) {
+                if ( is_array($field) ) {
+                    foreach ($field as $field_label) {
+                        if (count($field) === 1) {
+                            $data[$key] = $this->prepareTextContent($field_data->$field_label);
+                        } else {
+                            $data["{$key}_{$field_label}"] = $this->prepareTextContent($field_data->$field_label);
+                        }
                     }
+                } else {
+                    $data[$key] = $this->prepareTextContent($field_data);
                 }
-            } else {
-                $data[$key] = $this->prepareTextContent($field_data);
-            }
+            };
         }
 
         // append extra taxonomies
@@ -227,7 +227,8 @@ class AlgoliaIndex
 
             // no cache is set, create index with settings
         }
-        // $this->log->info('Create index');
+
+        $this->log->info(print_r($this->index_settings['config'], true));
 
         // init index in Algolia
         $this->index = $this->algolia_client->initIndex($this->index_name);
