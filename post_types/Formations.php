@@ -42,6 +42,6 @@ class Formations extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterI
 
     public function searchableAttributes()
     {
-        return array_merge($this->searchable_fields, $this->taxonomies);
+        return array_merge($this->searchable_fields, array('school'), $this->taxonomies);
     }
 }

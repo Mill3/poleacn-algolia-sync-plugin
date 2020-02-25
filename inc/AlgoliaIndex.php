@@ -127,8 +127,8 @@ class AlgoliaIndex
             // }
         }
 
-        $this->log->info('Saving object : '.$this->index_objectID($postID));
-        $this->log->info('Raw data : '. print_r($data, true));
+        // $this->log->info('Saving object : '.$this->index_objectID($postID));
+        // $this->log->info('Raw data : '. print_r($data, true));
 
         // save object
         $this->index->saveObject($data);
@@ -216,7 +216,7 @@ class AlgoliaIndex
 
         // cache found, set stored value to class
         if ($cached_index) {
-            $this->log->info('Use cached index');
+            // $this->log->info('Use cached index');
 
             $this->index = $cached_index;
 
@@ -224,7 +224,7 @@ class AlgoliaIndex
 
             // no cache is set, create index with settings
         }
-        $this->log->info('Create index');
+        // $this->log->info('Create index');
 
         // init index in Algolia
         $this->index = $this->algolia_client->initIndex($this->index_name);
