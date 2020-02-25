@@ -5,7 +5,7 @@
  * GitHub Plugin URI:  https://github.com/Mill3/poleacn-algolia-sync-plugin
  * Plugin Name: Poleacn - Algolia Sync
  * Description: Sync data from Wordpress to Algolia
- * Version: 0.0.9.2
+ * Version: 0.0.10
  * Author Name: Mill3 Studio (Antoine Girard)
  *
  * @package CSTJ_Algolia_Sync
@@ -32,11 +32,11 @@ class Main {
     }
 
     private function register() {
-        $registered_post_types['companies'] = new \WpAlgolia\Register\Companies('companies', ALGOLIA_PREFIX . 'companies', $this->algolia_client);
-        $registered_post_types['jobs'] = new \WpAlgolia\Register\Jobs('jobs', ALGOLIA_PREFIX . 'jobs', $this->algolia_client);
-        $registered_post_types['formations'] = new \WpAlgolia\Register\Formations('formations', ALGOLIA_PREFIX . 'formations', $this->algolia_client);
-        $registered_post_types['schools'] = new \WpAlgolia\Register\Schools('schools', ALGOLIA_PREFIX . 'schools', $this->algolia_client);
-        $registered_post_types['stages'] = new \WpAlgolia\Register\Stages('stages', ALGOLIA_PREFIX . 'stages', $this->algolia_client);
+        $registered_post_types['companies'] = new \WpAlgolia\Register\Companies('companies', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $registered_post_types['jobs'] = new \WpAlgolia\Register\Jobs('jobs', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $registered_post_types['formations'] = new \WpAlgolia\Register\Formations('formations', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $registered_post_types['schools'] = new \WpAlgolia\Register\Schools('schools', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $registered_post_types['stages'] = new \WpAlgolia\Register\Stages('stages', ALGOLIA_PREFIX . 'content', $this->algolia_client);
         // $registered_post_types['page'] = new \WpAlgolia\Register\Pages('page', ALGOLIA_PREFIX . 'page', $this->algolia_client);
         // $registered_post_types['post'] = new \WpAlgolia\Register\Programs('programs', ALGOLIA_PREFIX . 'programs', $this->algolia_client);
     }

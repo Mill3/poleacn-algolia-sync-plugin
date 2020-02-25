@@ -228,13 +228,13 @@ class AlgoliaIndex
             // no cache is set, create index with settings
         }
 
-        $this->log->info(print_r($this->index_settings['config'], true));
+        // $this->log->info(print_r($this->index_settings['config'], true));
 
         // init index in Algolia
         $this->index = $this->algolia_client->initIndex($this->index_name);
 
         // set settings
-        $this->index->setSettings($this->index_settings['config']);
+        // $this->index->setSettings($this->index_settings['config']);
 
         // trigger cache storage
         $this->cache_index();
