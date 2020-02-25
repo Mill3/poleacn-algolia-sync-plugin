@@ -17,7 +17,7 @@ class Formations extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterI
 
     public $acf_fields = array('school' => ['post_title']);
 
-    public $taxonomies = array('sectors', 'regions', 'establishment_types');
+    public $taxonomies = array('sectors', 'regions', 'establishment_types', 'school_levels');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {
@@ -29,7 +29,7 @@ class Formations extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterI
             'config'            => array(
                 'searchableAttributes'  => $this->searchableAttributes(),
                 'customRanking'         => array('asc(code)'),
-                'attributesForFaceting' => array('searchable(sectors)', 'searchable(regions)', 'searchable(establishment_types)'),
+                'attributesForFaceting' => array('searchable(sectors)', 'searchable(regions)', 'searchable(establishment_types)', 'searchable(school_levels)'),
                 'queryLanguages'        => array('fr', 'en'),
             ),
             array(
