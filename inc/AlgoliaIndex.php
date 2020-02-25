@@ -101,6 +101,9 @@ class AlgoliaIndex
         // append each custom field values
         foreach ($this->index_settings['acf_fields'] as $key => $field) {
             $field_data = get_field($key, $postID);
+
+            if(!$field_data) return;
+
             if ( is_array($field) ) {
                 foreach ($field as $field_label) {
                     if (count($field) === 1) {
