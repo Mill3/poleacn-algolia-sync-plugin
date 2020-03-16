@@ -154,17 +154,10 @@ abstract class RegisterAbstract
     {
         $posts = get_posts(array(
             'post_type'   => $this->get_post_type(),
-            'numberposts' => -1,
-            'meta_query'  => array(
-                array(
-                    'key'     => $this->index_settings['hidden_flag_field'],
-                    'compare' => '=',
-                    'value'   => 1,
-                ),
-            ),
+            'numberposts' => -1
         ));
 
-        // update each posts from current post type
+        // update each posts found from current post type
         foreach ($posts as $key => $post) {
             $this->algolia_index($post->ID)->save($post->ID, $post);
         }
