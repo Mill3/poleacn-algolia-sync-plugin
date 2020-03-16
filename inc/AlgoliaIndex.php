@@ -100,7 +100,13 @@ class AlgoliaIndex
 
         // append each custom field values
         foreach ($this->index_settings['acf_fields'] as $key => $field) {
-            $field_data = get_field($key, $postID);
+
+            // get ACF data
+            if (is_array($field)) {
+                $field_data = get_field($key, $postID);
+            } else {
+                $field_data = get_field($field, $postID);
+            }
 
             if($field_data) {
                 if ( is_array($field) ) {
@@ -112,7 +118,7 @@ class AlgoliaIndex
                         }
                     }
                 } else {
-                    $data[$key] = $this->prepareTextContent($field_data);
+                    $data[$field] = $this->prepareTextContent($field_data);
                 }
             };
         }
