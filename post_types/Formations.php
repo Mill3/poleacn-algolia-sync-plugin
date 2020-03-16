@@ -15,7 +15,7 @@ class Formations extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterI
 {
     public $searchable_fields = array('post_title', 'content');
 
-    public $acf_fields = array('school' => ['post_title']);
+    public $acf_fields = array('school' => ['post_title'], 'link');
 
     public $taxonomies = array('sectors', 'regions', 'establishment_types', 'school_levels');
 

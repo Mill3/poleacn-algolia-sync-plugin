@@ -15,7 +15,7 @@ class Schools extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInte
 {
     public $searchable_fields = array('post_title', 'content');
 
-    public $acf_fields = array();
+    public $acf_fields = array('link');
 
     public $taxonomies = array('sectors', 'regions', 'establishment_types', 'school_levels');
 
