@@ -44,4 +44,17 @@ class Companies extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterIn
     {
         return array_merge($this->searchable_fields, $this->acf_fields, $this->taxonomies);
     }
+
+    // implement any special data handling for post type here
+    public function extraFields($data, $postID) {
+
+        // set permalink as formatted url value
+        $link_to_permalink = get_field('link_to_permalink', $postID);
+        if ($link_to_permalink) {
+            $permalink = get_permalink($postID);
+            $data['formated_url'] = "href='{$permalink}'";
+        }
+
+        return $data;
+    }
 }

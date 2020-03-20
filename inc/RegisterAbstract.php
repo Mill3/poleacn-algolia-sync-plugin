@@ -194,6 +194,6 @@ abstract class RegisterAbstract
 
     private function algolia_index($post_ID)
     {
-        return new \WpAlgolia\AlgoliaIndex($this->set_index_name($post_ID), $this->algolia_client, $this->index_settings, $this->log);
+        return new \WpAlgolia\AlgoliaIndex($this->set_index_name($post_ID), $this->algolia_client, $this->index_settings, $this->log, $this);
     }
 }

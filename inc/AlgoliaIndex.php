@@ -56,19 +56,27 @@ class AlgoliaIndex
     public $log;
 
     /**
+     * parent class instance reference.
+     *
+     * @var object
+     */
+    public $instance;
+
+    /**
      * Constructor.
      *
      * @param string $index_name
      * @param object $algolia_client
      * @param array  $index_settings
      */
-    public function __construct($index_name, $algolia_client, $index_settings = array('config' => array()), $log)
+    public function __construct($index_name, $algolia_client, $index_settings = array('config' => array()), $log, $instance)
     {
         $this->index_name = $index_name;
         $this->algolia_client = $algolia_client;
         $this->index_settings = $index_settings;
         $this->post_type = $index_settings['post_type'];
         $this->log = $log;
+        $this->instance = $instance;
         $this->run();
     }
 
@@ -92,11 +100,16 @@ class AlgoliaIndex
             'objectID'          => $this->index_objectID($post->ID),
             'post_title'        => $post->post_title,
             'post_thumbnail'    => get_the_post_thumbnail_url($post, 'post-thumbnail'),
-            'excerpt'           => $this->prepareTextContent($post->post_excerpt),
+            'excerpt'           => $this->prepareTextContent($post->post_content, 125),
             'content'           => $this->prepareTextContent($post->post_content),
             'url'               => get_post_permalink($post->ID),
             'post_type'         => get_post_type($post->ID)
         );
+
+        // handle extra fields formating per post-type
+        if(method_exists($this->instance, 'extraFields')) {
+            $data = $this->instance->extraFields($data, $post->ID);
+        }
 
         // append each custom field values
         foreach ($this->index_settings['acf_fields'] as $key => $field) {
@@ -265,7 +278,7 @@ class AlgoliaIndex
      *
      * @return string
      */
-    private function prepareTextContent($content)
+    private function prepareTextContent($content, $trimLength = 0)
     {
         if(gettype($content) != 'string') {
             return $content;
@@ -273,6 +286,8 @@ class AlgoliaIndex
 
         $content = strip_tags($content);
         $content = preg_replace('#[\n\r]+#s', ' ', $content);
+
+        $content = $trimLength > 0 ? mb_strimwidth($content, 0, $trimLength, '...') : $content;
 
         return $content;
     }
