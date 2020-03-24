@@ -16,7 +16,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 {
     public $searchable_fields = array('post_title');
 
-    public $acf_fields = array('date', 'time_start', 'time_end', 'location', 'address');
+    public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'address');
 
     public $taxonomies = array('event_types');
 
@@ -55,12 +55,18 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
       // get date
       $date = get_field('date', $postID, false);
 
-      // parse date with Carbon lib
+      // get end date
+      $date_end = get_field('date_end', $postID, false);
+
+      // parse dates with Carbon lib
       $parsed_date = Carbon::parse($date);
+      $parsed_date_end = $date_end ? Carbon::parse($date_end) : null;
 
       // send day, month and year as seperate field value to index
       $data['day'] = $parsed_date->locale($locale)->isoFormat('D');
+      $data['day_end'] = $parsed_date_end ? $parsed_date_end->locale($locale)->isoFormat('D') : null;
       $data['month'] = ucfirst($parsed_date->locale($locale)->isoFormat('MMMM'));
+      $data['month_end'] = $parsed_date_end ? ucfirst($parsed_date->locale($locale)->isoFormat('MMMM')) : null;
       $data['year'] = $parsed_date->locale($locale)->isoFormat('YYYY');
       $data['timestamp'] = $parsed_date->getTimestamp();
 
