@@ -18,7 +18,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 
     public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'address', 'link');
 
-    public $taxonomies = array('event_types');
+    public $taxonomies = array('regions', 'event_types');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {
@@ -29,7 +29,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
             'hidden_flag_field' => 'search_hidden',
             'config'            => array(
                 'searchableAttributes'  => $this->searchableAttributes(),
-                'customRanking'         => array('asc(code)'),
+                'customRanking'         => array('asc(timestamp)'),
                 'attributesForFaceting' => array(),
                 'queryLanguages'        => array('fr', 'en'),
             ),
