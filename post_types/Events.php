@@ -78,7 +78,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
           $data['city'] = $coordinates['city'];
           $data['state'] = $coordinates['state'];
           $data['country'] = $coordinates['country'];
-          $data['post_code'] = $coordinates['post_code'];
+          // $data['post_code'] = $coordinates['post_code'];
       }
 
       // set permalink as formatted url value
