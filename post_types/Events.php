@@ -8,6 +8,7 @@
 
 namespace WpAlgolia\Register;
 
+use Carbon\Carbon;
 use WpAlgolia\RegisterAbstract as WpAlgoliaRegisterAbstract;
 use WpAlgolia\RegisterInterface as WpAlgoliaRegisterInterface;
 
@@ -15,7 +16,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 {
     public $searchable_fields = array('post_title');
 
-    public $acf_fields = array('date', 'time', 'location', 'address', 'coordinates');
+    public $acf_fields = array('date', 'time_start', 'time_end', 'location', 'address');
 
     public $taxonomies = array('event_types');
 
@@ -46,15 +47,22 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
     }
 
     // implement any special data handling for post type here
-    public function extraFields($data, $postID) {
+    public function extraFields($data, $postID, $log) {
+
+      // set locale from post
+      $locale = pll_get_post_language($postID);
 
       // get date
       $date = get_field('date', $postID, false);
 
+      // parse date with Carbon lib
+      $parsed_date = Carbon::parse($date);
+
       // send day, month and year as seperate field value to index
-      $data['day'] = date('d', strtotime($date));
-      $data['month'] = date('F', strtotime($date));
-      $data['year'] = date('Y', strtotime($date));
+      $data['day'] = $parsed_date->locale($locale)->isoFormat('D');
+      $data['month'] = ucfirst($parsed_date->locale($locale)->isoFormat('MMMM'));
+      $data['year'] = $parsed_date->locale($locale)->isoFormat('YYYY');
+      $data['timestamp'] = $parsed_date->getTimestamp();
 
       // set permalink as formatted url value
       $coordinates = get_field('coordinates', $postID);
@@ -69,4 +77,5 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 
       return $data;
     }
+
 }

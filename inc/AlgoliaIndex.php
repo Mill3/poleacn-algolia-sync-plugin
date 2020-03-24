@@ -140,17 +140,7 @@ class AlgoliaIndex
         foreach ($this->index_settings['taxonomies'] as $key => $taxonomy) {
             $terms = wp_get_post_terms($post->ID, $taxonomy, array('fields' => 'names'));
             $data[$taxonomy] = $terms;
-
-            // if term was found, try to get extra custom fields values
-            // TODO: move this in a class instance settings with $this->index_settings
-            // if (isset($terms[0])) {
-            //     $term = $terms[0];
-            //     $data["{$taxonomy}_color"] = get_field('color', get_term_by('name', $term, $taxonomy));
-            // }
         }
-
-        // $this->log->info('Saving object : '.$this->index_objectID($postID));
-        // $this->log->info('Raw data : '. print_r($data, true));
 
         // save object
         $this->index->saveObject($data);
