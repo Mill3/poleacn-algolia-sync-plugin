@@ -16,7 +16,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 {
     public $searchable_fields = array('post_title');
 
-    public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'address');
+    public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'address', 'link');
 
     public $taxonomies = array('event_types');
 
@@ -79,6 +79,13 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
           $data['state'] = $coordinates['state'];
           $data['country'] = $coordinates['country'];
           $data['post_code'] = $coordinates['post_code'];
+      }
+
+      // set permalink as formatted url value
+      $link_to_permalink = get_field('link_to_permalink', $postID);
+      if ($link_to_permalink) {
+          $permalink = get_permalink($postID);
+          $data['formated_url'] = "href='{$permalink}'";
       }
 
       return $data;
