@@ -5,7 +5,7 @@
  * GitHub Plugin URI:  https://github.com/Mill3/poleacn-algolia-sync-plugin
  * Plugin Name: Poleacn - Algolia Sync
  * Description: Sync data from Wordpress to Algolia
- * Version: 0.0.21
+ * Version: 0.0.22
  * Author Name: Mill3 Studio (Antoine Girard)
  *
  * @package CSTJ_Algolia_Sync
@@ -38,6 +38,7 @@ class Main {
         $registered_post_types['schools'] = new \WpAlgolia\Register\Schools('schools', ALGOLIA_PREFIX . 'content', $this->algolia_client);
         $registered_post_types['stages'] = new \WpAlgolia\Register\Stages('stages', ALGOLIA_PREFIX . 'content', $this->algolia_client);
         $registered_post_types['events'] = new \WpAlgolia\Register\Events('events', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $registered_post_types['researches'] = new \WpAlgolia\Register\Researches('researches', ALGOLIA_PREFIX . 'content', $this->algolia_client);
     }
 
 }
@@ -69,6 +70,7 @@ add_action(
         require_once __DIR__ . '/post_types/Schools.php';
         require_once __DIR__ . '/post_types/Stages.php';
         require_once __DIR__ . '/post_types/Events.php';
+        require_once __DIR__ . '/post_types/Researches.php';
 
         // client
         $algoliaClient = \Algolia\AlgoliaSearch\SearchClient::create(ALGOLIA_APPLICATION_ID, ALGOLIA_ADMIN_API_KEY);
