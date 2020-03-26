@@ -68,7 +68,8 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
       $data['month'] = ucfirst($parsed_date->locale($locale)->isoFormat('MMMM'));
       $data['month_end'] = $parsed_date_end ? ucfirst($parsed_date->locale($locale)->isoFormat('MMMM')) : null;
       $data['year'] = $parsed_date->locale($locale)->isoFormat('YYYY');
-      $data['timestamp'] = $parsed_date->getTimestamp();
+      // convert php timestamp from epoch to milliseconds
+      $data['timestamp'] = $parsed_date->getTimestamp() * 1000;
 
       // set permalink as formatted url value
       $coordinates = get_field('coordinates', $postID);
