@@ -102,7 +102,7 @@ class AlgoliaIndex
             'post_thumbnail'    => get_the_post_thumbnail_url($post, 'post-thumbnail'),
             'excerpt'           => $post->post_excerpt ? $this->prepareTextContent($post->post_excerpt) : $this->prepareTextContent($post->post_content, 125),
             'content'           => $this->prepareTextContent($post->post_content),
-            'url'               => get_post_permalink($post->ID),
+            'url'               => get_permalink($post->ID),
             'post_type'         => get_post_type($post->ID)
         );
 
