@@ -29,7 +29,7 @@ class Researches extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterI
             'config'            => array(
                 'searchableAttributes'  => $this->searchableAttributes(),
                 'customRanking'         => array('asc(code)'),
-                'attributesForFaceting' => array('searchable(sectors)', 'searchable(regions)'),
+                'attributesForFaceting' => array('searchable(sectors)', 'searchable(establishment_types)'),
                 'queryLanguages'        => array('fr', 'en'),
             ),
             array(
