@@ -15,7 +15,7 @@ class Stages extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 {
     public $searchable_fields = array('post_title', 'content');
 
-    public $acf_fields = array('company' => ['post_title'], 'link');
+    public $acf_fields = array('company' => ['post_title'], 'link', 'link_to_permalink');
 
     public $taxonomies = array('sectors', 'regions', 'establishment_types');
 
