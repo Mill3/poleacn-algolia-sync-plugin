@@ -18,13 +18,15 @@ interface RegisterInterface
 
     public function delete_post($postId, $post);
 
-    public function update_posts();
+    public function update_posts($term_id, $tt_id);
 
     public function register_bulk_update($bulk_actions);
 
     public function handle_bulk_update($redirect_to, $doaction, $post_ids);
 
     public function manage_admin_columns($columns);
+
+    public function manage_admin_check_algolia_status();
 
     public function manage_admin_column($column, $post_id);
 }

@@ -5,7 +5,7 @@
  * GitHub Plugin URI:  https://github.com/Mill3/poleacn-algolia-sync-plugin
  * Plugin Name: Poleacn - Algolia Sync
  * Description: Sync data from Wordpress to Algolia
- * Version: 0.1.1
+ * Version: 0.2.0
  * Author Name: Mill3 Studio (Antoine Girard)
  *
  * @package CSTJ_Algolia_Sync
