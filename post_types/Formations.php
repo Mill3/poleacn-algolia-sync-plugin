@@ -29,7 +29,7 @@ class Formations extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterI
             'config'            => array(
                 'searchableAttributes'  => $this->searchableAttributes(),
                 'customRanking'         => array('asc(code)'),
-                'attributesForFaceting' => array('searchable(sectors)', 'searchable(regions)', 'searchable(establishment_types)', 'searchable(school_levels)'),
+                'attributesForFaceting' => array('searchable(post_type)', 'searchable(sectors)', 'searchable(regions)', 'searchable(establishment_types)', 'searchable(school_levels)', 'searchable(city)', 'searchable(company)', 'searchable(event_types)', 'searchable(incubator_types)', 'searchable(month)'),
                 'queryLanguages'        => array('fr', 'en'),
             ),
             array(

@@ -11,6 +11,9 @@ namespace WpAlgolia;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
+use WP_CLI;
+use WP_CLI_Command;
+
 abstract class RegisterAbstract
 {
     public $post_type;
@@ -18,8 +21,6 @@ abstract class RegisterAbstract
     public $index_name_base;
 
     public $algolia_client;
-
-    public $algolia_index;
 
     public $index_settings;
 
@@ -29,8 +30,6 @@ abstract class RegisterAbstract
 
     public function __construct($post_type, $index_name_base, $algolia_client, $index_settings = null)
     {
-        global $pagenow;
-
         // set class attributes
         $this->post_type = $post_type;
         $this->index_name_base = $index_name_base;
@@ -38,8 +37,7 @@ abstract class RegisterAbstract
         $this->index_settings = $index_settings;
         $this->locale = null;
 
-
-        // create logging
+        // create a logger
         $this->log = new Logger($index_name_base);
         $this->log->pushHandler(new StreamHandler(__DIR__."/debug-{$post_type}.log", Logger::DEBUG));
 
@@ -56,8 +54,8 @@ abstract class RegisterAbstract
 
         // Taxonomies actions
         foreach ($this->index_settings['taxonomies'] as $key => $taxonomy) {
-            add_action("edited_{$taxonomy}", array($this, 'update_posts'), 10, 2);
-            add_action("delete_{$taxonomy}", array($this, 'update_posts'), 10, 2);
+            add_action("edited_{$taxonomy}", array($this, 'update_taxonomy_posts'), 10, 2);
+            add_action("delete_{$taxonomy}", array($this, 'update_taxonomy_posts'), 10, 2);
         }
     }
 
@@ -111,9 +109,6 @@ abstract class RegisterAbstract
 
             return;
         }
-
-        // log record save
-        // $this->log->info('Saving record : '.$post_ID);
 
         // send to algolia
         $this->algolia_index($post_ID)->save($post_ID, $post);
@@ -240,17 +235,14 @@ abstract class RegisterAbstract
                 async: false,
                 data : data,
                 success: function(response) {
-                    console.log('response:', response)
                     jQuery.each(response.data.items, function(i, item) {
+                        // get element using loop's current index
                         var el = $(items[i]);
 
-                        // set loading
-                        el.addClass('loaded');
+                        // set el as loaded
+                        el.addClass('loaded').removeClass('dashicons dashicons-update-alt loading');
 
-                        // remove loading state
-                        el.removeClass('dashicons dashicons-update-alt loading')
-
-                        // handle style if record exist
+                        // handle style with classname for record status
                         if (item.record_exist) {
                             el.addClass('yes');
                         } else {
@@ -264,7 +256,15 @@ abstract class RegisterAbstract
     <?php
     }
 
-    public function update_posts($term_id, $tt_id)
+    /**
+     * Get all post in a taxonomy then force Algolia index update
+     *
+     * @param int $term_ID
+     * @param int $term_ID
+     *
+     * @return null
+     */
+    public function update_taxonomy_posts($term_id, $tt_id)
     {
 
         $term = get_term($term_id);
@@ -295,7 +295,7 @@ abstract class RegisterAbstract
      * Check if post has a bool 'hidden_flag_field' returning true
      * Any other value should prevent from sending object to Algolia.
      *
-     * @param [type] $post_ID
+     * @param int $post_ID
      *
      * @return bool
      */
@@ -310,6 +310,14 @@ abstract class RegisterAbstract
         }
     }
 
+    /**
+     * Set index name while adding a post language code.
+     * This way we can have an index per locale for the same post-type
+     *
+     * @param int $post_ID
+     *
+     * @return string
+     */
     private function set_index_name($post_ID)
     {
         if (\function_exists('pll_get_post_language')) {
@@ -320,8 +328,54 @@ abstract class RegisterAbstract
         return implode('_', array($this->index_name_base, $this->locale));
     }
 
+    /**
+     * Algolia index operation class,
+     * An instance created each time its needed in this class
+     *
+     * @param int $post_ID
+     *
+     * @return class AlgoliaIndex
+     */
     private function algolia_index($post_ID)
     {
         return new \WpAlgolia\AlgoliaIndex($this->set_index_name($post_ID), $this->algolia_client, $this->index_settings, $this->log, $this);
     }
+
+    /**
+     * CLI : reindex
+     * Reindex all record for post type
+     *
+     * @return null
+     */
+    public function cli_reindex() {
+        $posts = get_posts(array(
+            'post_type'   => $this->get_post_type(),
+            'post_status' => 'publish',
+            'numberposts' => -1
+        ));
+
+        // update each posts found from current post type
+        foreach ($posts as $key => $post) {
+             // check if should push to index ?
+            if (false === $this->show_in_index($post->ID)) return;
+
+            if (defined('WP_CLI') && WP_CLI) {
+                \WP_CLI::line(sprintf(__('Updating index "%s" with PostID %s : %s', 'wp_algolia'), $this->get_post_type(), $post->ID, $post->post_title));
+            }
+
+            $this->algolia_index($post->ID)->save($post->ID, $post);
+        }
+    }
+
+    /**
+     * CLI : settings
+     * Set index settings
+     *
+     * @return null
+     */
+    public function cli_set_settings($locale = 'fr') {
+        $index_name = implode('_', array($this->index_name_base, $locale));
+        $this->algolia_index($index_name)->init_index(true);
+    }
+
 }

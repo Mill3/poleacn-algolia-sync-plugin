@@ -222,7 +222,7 @@ class AlgoliaIndex
     /**
      * Init Algolia index and set its settings.
      */
-    private function init_index()
+    public function init_index($settings = false)
     {
         $cached_index = $this->get_cached_index();
 
@@ -231,6 +231,10 @@ class AlgoliaIndex
             // $this->log->info('Use cached index');
 
             $this->index = $cached_index;
+
+            if($settings) {
+                $this->index->setSettings($this->index_settings['config']);
+            }
 
             return;
 
@@ -241,7 +245,9 @@ class AlgoliaIndex
         $this->index = $this->algolia_client->initIndex($this->index_name);
 
         // set settings
-        // $this->index->setSettings($this->index_settings['config']);
+        if($settings) {
+            $this->index->setSettings($this->index_settings['config']);
+        }
 
         // trigger cache storage
         $this->cache_index();

@@ -5,43 +5,42 @@
  * GitHub Plugin URI:  https://github.com/Mill3/poleacn-algolia-sync-plugin
  * Plugin Name: Poleacn - Algolia Sync
  * Description: Sync data from Wordpress to Algolia
- * Version: 0.2.1
+ * Version: 0.3.0
  * Author Name: Mill3 Studio (Antoine Girard)
  *
  * @package CSTJ_Algolia_Sync
  */
 
 namespace WpAlgolia;
-
 class Main {
 
-    private $algolia_client;
+    public $algolia_client;
 
-    private $registered_post_types = array();
+    public $registered_post_types = array();
 
     public function __construct($algolia_client) {
         $this->algolia_client = $algolia_client;
     }
 
     public function run() {
-        $this->register();
+        return $this->register();
     }
 
-    public static function search() {
+    public function search() {
         return null;
     }
 
     private function register() {
-        $registered_post_types['companies'] = new \WpAlgolia\Register\Companies('companies', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['jobs'] = new \WpAlgolia\Register\Jobs('jobs', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['formations'] = new \WpAlgolia\Register\Formations('formations', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['schools'] = new \WpAlgolia\Register\Schools('schools', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['stages'] = new \WpAlgolia\Register\Stages('stages', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['events'] = new \WpAlgolia\Register\Events('events', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['researches'] = new \WpAlgolia\Register\Researches('researches', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['research_chairs'] = new \WpAlgolia\Register\ResearchChairs('research_chairs', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['research_projects'] = new \WpAlgolia\Register\ResearchProjects('research_projects', ALGOLIA_PREFIX . 'content', $this->algolia_client);
-        $registered_post_types['research_incubators'] = new \WpAlgolia\Register\ResearchIncubators('research_incubators', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['companies'] = new \WpAlgolia\Register\Companies('companies', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['jobs'] = new \WpAlgolia\Register\Jobs('jobs', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['formations'] = new \WpAlgolia\Register\Formations('formations', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['schools'] = new \WpAlgolia\Register\Schools('schools', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['stages'] = new \WpAlgolia\Register\Stages('stages', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['events'] = new \WpAlgolia\Register\Events('events', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['researches'] = new \WpAlgolia\Register\Researches('researches', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['research_chairs'] = new \WpAlgolia\Register\ResearchChairs('research_chairs', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['research_projects'] = new \WpAlgolia\Register\ResearchProjects('research_projects', ALGOLIA_PREFIX . 'content', $this->algolia_client);
+        $this->registered_post_types['research_incubators'] = new \WpAlgolia\Register\ResearchIncubators('research_incubators', ALGOLIA_PREFIX . 'content', $this->algolia_client);
     }
 
 }
@@ -86,5 +85,13 @@ add_action(
 
         // run
         $instance->run();
+
+        // WP CLI commands.
+        if (defined('WP_CLI') && WP_CLI && $instance) {
+            require_once __DIR__ . '/inc/Commands.php';
+            $commands = new \WpAlgolia\Commands($instance);
+            \WP_CLI::add_command('algolia', $commands);
+        }
+
     }
 );
