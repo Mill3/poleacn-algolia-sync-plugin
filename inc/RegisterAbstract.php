@@ -194,6 +194,7 @@ abstract class RegisterAbstract
 
             [data-check-algolia-status] {
                 display: inline-block;
+                vertical-align: top;
             }
 
             [data-check-algolia-status].loading {
@@ -203,11 +204,19 @@ abstract class RegisterAbstract
                 animation-timing-function: linear;
                 opacity: 0.25;
             }
-            [data-check-algolia-status].dashicons-yes-alt {
-                color: #5468ff;
+            [data-check-algolia-status].loaded {
+                width: 12px !important;
+                height: 12px !important;
+                border-radius: 50%!important;
+                margin: 3px 10px 0 3px;
+                background: #888;
+
             }
-            [data-check-algolia-status].dashicons-no-alt {
-                color: red;
+            [data-check-algolia-status].yes {
+                background: #5468ff;
+            }
+            [data-check-algolia-status].no {
+                background: red;
             }
         </style>
         <script type="text/javascript">
@@ -235,14 +244,17 @@ abstract class RegisterAbstract
                     jQuery.each(response.data.items, function(i, item) {
                         var el = $(items[i]);
 
+                        // set loading
+                        el.addClass('loaded');
+
                         // remove loading state
-                        el.removeClass('dashicons-update-alt loading')
+                        el.removeClass('dashicons dashicons-update-alt loading')
 
                         // handle style if record exist
                         if (item.record_exist) {
-                            el.addClass('dashicons-yes-alt');
+                            el.addClass('yes');
                         } else {
-                            el.addClass('dashicons-no-alt');
+                            el.addClass('no');
                         }
                     })
                 }
