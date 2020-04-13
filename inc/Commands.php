@@ -27,7 +27,14 @@ class Commands extends WP_CLI_Command
         $this->instance = $instance;
     }
 
-    private function get_post_type_instance($indexName) {
+
+    /**
+     * Get registered post-type from Main $instance
+     *
+     * @param string $indexName
+     * @return class
+     */
+    private function get_registered_post_type($indexName) {
         try {
             return $this->instance->registered_post_types[$indexName];
         } catch (\Throwable $th) {
@@ -37,7 +44,7 @@ class Commands extends WP_CLI_Command
 
 
      /**
-     * Push all records to Algolia for a given index.
+     * Set settings to Algolia for a given index.
      *
      * ## OPTIONS
      *
@@ -54,20 +61,20 @@ class Commands extends WP_CLI_Command
      * @param mixed $args
      * @param mixed $assoc_args
      */
-    public function settings($args, $assoc_args) {
-        list($indexName) = $args;
+    // public function settings($args, $assoc_args) {
+    //     list($indexName) = $args;
 
-        // get registered post type
-        $indexInstance = $this->get_post_type_instance($indexName);
+    //     // get registered post type
+    //     $indexInstance = $this->get_post_type_instance($indexName);
 
-        if( !$indexInstance ) {
-            WP_CLI::error(sprintf("Index for post type '%s' is not a registered index.", $indexName));
-            return;
-        }
+    //     if( !$indexInstance ) {
+    //         WP_CLI::error(sprintf("Index for post type '%s' is not a registered index.", $indexName));
+    //         return;
+    //     }
 
-        // run reindex
-        $indexInstance->cli_set_settings();
-    }
+    //     // run reindex
+    //     $indexInstance->cli_set_settings();
+    // }
 
     /**
      * List all available index.
@@ -88,7 +95,7 @@ class Commands extends WP_CLI_Command
     }
 
     /**
-     * Push all records to Algolia for a given index.
+     * Push all records to Algolia for a given post type.
      *
      * ## OPTIONS
      *
@@ -119,7 +126,7 @@ class Commands extends WP_CLI_Command
         list($indexName) = $args;
 
         // get registered post type
-        $indexInstance = $this->get_post_type_instance($indexName);
+        $indexInstance = $this->get_registered_post_type($indexName);
 
         if( !$indexInstance ) {
             WP_CLI::error(sprintf("Index for post type '%s' is not a registered index.", $indexName));
@@ -162,30 +169,4 @@ class Commands extends WP_CLI_Command
         // WP_CLI::success(sprintf(__('%d records pushed to Algolia in %d seconds!', 'algolia'), $totalRecordsCount, $elapsed));
     }
 
-    /**
-     * Push the settings for an index to Algolia.
-     *
-     * ## OPTIONS
-     *
-     * <indexName>
-     * : The key of the index.
-     *
-     *
-     * ## EXAMPLES
-     *
-     *     wp algolia pushSettings articles
-     *
-     * @when before_wp_load
-     *
-     * @param mixed $args
-     * @param mixed $assoc_args
-     */
-    public function pushSettings($args, $assoc_args)
-    {
-        list($indexName) = $args;
-        // $index = $this->indexRepository->get($indexName);
-        // WP_CLI::line(sprintf(__('About to push the settings for index %s...', 'algolia'), $index->getName()));
-        // $index->pushSettings();
-        // WP_CLI::success(sprintf(__('Correctly pushed settings to the index "%s".', 'algolia'), $index->getName()));
-    }
 }

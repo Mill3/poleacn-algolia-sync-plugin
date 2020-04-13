@@ -159,7 +159,7 @@ abstract class RegisterAbstract
     public function manage_admin_column($column, $post_ID)
     {
         if ('in_index' === $column) {
-            echo '<span data-check-algolia-status data-post-id="' . $post_ID , '" class="dashicons dashicons-update-alt loading"></span>';
+            echo '<span data-check-algolia-status data-post-id="' . $post_ID , '" class="dashicons loading"></span>';
         }
     }
 
@@ -190,26 +190,20 @@ abstract class RegisterAbstract
             [data-check-algolia-status] {
                 display: inline-block;
                 vertical-align: top;
-            }
-
-            [data-check-algolia-status].loading {
-                animation-name: rotate;
-                animation-duration: 2s;
-                animation-iteration-count: infinite;
-                animation-timing-function: linear;
-                opacity: 0.25;
-            }
-            [data-check-algolia-status].loaded {
                 width: 12px !important;
                 height: 12px !important;
                 border-radius: 50%!important;
                 margin: 3px 10px 0 3px;
-                background: #888;
-
             }
+
+            [data-check-algolia-status].loading {
+                background: #888;
+            }
+
             [data-check-algolia-status].yes {
                 background: #5468ff;
             }
+
             [data-check-algolia-status].no {
                 background: red;
             }
