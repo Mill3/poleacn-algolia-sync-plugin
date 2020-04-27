@@ -16,7 +16,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 {
     public $searchable_fields = array('post_title');
 
-    public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'address', 'link');
+    public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'address', 'link', 'city', 'link_to_permalink');
 
     public $taxonomies = array('regions', 'event_types');
 
@@ -53,13 +53,13 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
       $locale = pll_get_post_language($postID);
 
       // get date
-      $date = get_field('date', $postID, false);
+      $date = get_field('date', $postID, true);
 
       // get end date
-      $date_end = get_field('date_end', $postID, false);
+      $date_end = get_field('date_end', $postID, true);
 
       // parse dates with Carbon lib
-      $parsed_date = Carbon::parse($date);
+      $parsed_date = $date ? Carbon::parse($date) : null;
       $parsed_date_end = $date_end ? Carbon::parse($date_end) : null;
 
       // send day, month and year as seperate field value to index
@@ -71,17 +71,6 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
       // convert php timestamp from epoch to milliseconds
       $data['timestamp'] = $parsed_date->getTimestamp() * 1000;
       $data['timestamp_end'] = $parsed_date_end ? $parsed_date_end->getTimestamp() * 1000 : null;
-
-      // set permalink as formatted url value
-      $coordinates = get_field('coordinates', $postID);
-      if ($coordinates) {
-          $data['lat'] = $coordinates['lat'];
-          $data['lng'] = $coordinates['lng'];
-          $data['city'] = $coordinates['city'];
-          $data['state'] = $coordinates['state'];
-          $data['country'] = $coordinates['country'];
-          // $data['post_code'] = $coordinates['post_code'];
-      }
 
       // set permalink as formatted url value
       $link_to_permalink = get_field('link_to_permalink', $postID);

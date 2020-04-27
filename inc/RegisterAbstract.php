@@ -167,6 +167,8 @@ abstract class RegisterAbstract
         $ids = $_POST['ids'];
         $items = array();
 
+        if(empty($ids)) return;
+
         foreach ($ids as $key => $id) {
             $exist = $this->algolia_index($id)->record_exist($id) != false;
             $items[] = array('id' => $id, 'record_exist' => $exist);
