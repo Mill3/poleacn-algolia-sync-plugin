@@ -17,7 +17,7 @@ class ResearchProjects extends WpAlgoliaRegisterAbstract implements WpAlgoliaReg
 
     public $acf_fields = array('school' => ['post_title'], 'link', 'link_to_permalink');
 
-    public $taxonomies = array('sectors');
+    public $taxonomies = array('sectors', 'regions');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {

@@ -17,7 +17,7 @@ class Researches extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterI
 
     public $acf_fields = array('school' => ['post_title'], 'link', 'link_to_permalink');
 
-    public $taxonomies = array('sectors', 'establishment_types');
+    public $taxonomies = array('sectors', 'establishment_types', 'regions');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {

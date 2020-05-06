@@ -17,7 +17,7 @@ class ResearchIncubators extends WpAlgoliaRegisterAbstract implements WpAlgoliaR
 
     public $acf_fields = array('school' => ['post_title'], 'link', 'link_to_permalink');
 
-    public $taxonomies = array('sectors', 'incubator_types');
+    public $taxonomies = array('sectors', 'incubator_types', 'regions');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {
