@@ -16,9 +16,9 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 {
     public $searchable_fields = array('post_title');
 
-    public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'address', 'link', 'city', 'link_to_permalink');
+    public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'country', 'address', 'link', 'city', 'link_to_permalink');
 
-    public $taxonomies = array('regions', 'event_types');
+    public $taxonomies = array('regions', 'sectors', 'event_types');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {
@@ -63,14 +63,24 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
       $parsed_date_end = $date_end ? Carbon::parse($date_end) : null;
 
       // send day, month and year as seperate field value to index
-      $data['day'] = $parsed_date->locale($locale)->isoFormat('D');
-      $data['day_end'] = $parsed_date_end ? $parsed_date_end->locale($locale)->isoFormat('D') : null;
-      $data['month'] = ucfirst($parsed_date->locale($locale)->isoFormat('MMMM'));
-      $data['month_end'] = $parsed_date_end ? ucfirst($parsed_date->locale($locale)->isoFormat('MMMM')) : null;
-      $data['year'] = $parsed_date->locale($locale)->isoFormat('YYYY');
-      // convert php timestamp from epoch to milliseconds
-      $data['timestamp'] = $parsed_date->getTimestamp() * 1000;
-      $data['timestamp_end'] = $parsed_date_end ? $parsed_date_end->getTimestamp() * 1000 : null;
+      try {
+          $data['day'] = $parsed_date->locale($locale)->isoFormat('D');
+          $data['month'] = ucfirst($parsed_date->locale($locale)->isoFormat('MMMM'));
+          $data['year'] = $parsed_date->locale($locale)->isoFormat('YYYY');
+          // convert php timestamp from epoch to milliseconds
+          $data['timestamp'] = $parsed_date->getTimestamp() * 1000;
+      } catch (\Throwable $th) {
+          //throw $th;
+      }
+
+      try {
+        $data['day_end'] = $parsed_date_end ? $parsed_date_end->locale($locale)->isoFormat('D') : null;
+        $data['month_end'] = $parsed_date_end ? ucfirst($parsed_date->locale($locale)->isoFormat('MMMM')) : null;
+        // convert php timestamp from epoch to milliseconds
+        $data['timestamp_end'] = $parsed_date_end ? $parsed_date_end->getTimestamp() * 1000 : null;
+      } catch (\Throwable $th) {
+          //throw $th;
+      }
 
       // set permalink as formatted url value
       $link_to_permalink = get_field('link_to_permalink', $postID);
