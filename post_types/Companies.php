@@ -17,7 +17,7 @@ class Companies extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterIn
 
     public $acf_fields = array('link', 'link_to_permalink');
 
-    public $taxonomies = array('sectors', 'regions', 'company_type');
+    public $taxonomies = array('sectors', 'regions', 'company_types');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {
