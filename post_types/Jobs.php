@@ -17,7 +17,7 @@ class Jobs extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInterfa
 
     public $acf_fields = array('link', 'link_to_permalink');
 
-    public $taxonomies = array('sectors', 'regions');
+    public $taxonomies = array('sectors', 'regions', 'post_tag');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {

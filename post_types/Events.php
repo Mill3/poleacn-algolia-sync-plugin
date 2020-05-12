@@ -18,7 +18,7 @@ class Events extends WpAlgoliaRegisterAbstract implements WpAlgoliaRegisterInter
 
     public $acf_fields = array('date', 'date_end', 'time_start', 'time_end', 'location', 'country', 'address', 'link', 'city', 'link_to_permalink');
 
-    public $taxonomies = array('regions', 'sectors', 'event_types');
+    public $taxonomies = array('regions', 'sectors', 'event_types', 'post_tag');
 
     public function __construct($post_type, $index_name, $algolia_client)
     {
