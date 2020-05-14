@@ -67,10 +67,17 @@ class Commands extends WP_CLI_Command
      *
      * <indexName>
      * : The key of the index.
+     * ---
+     * default: all
+     * ---
+     *
+     * [--all]
+     * : if should index all
      *
      * ## EXAMPLES
      *
      *     wp algolia re-index articles
+     *     wp algolia re-index --all
      *
      * @when before_wp_load
      *
@@ -80,6 +87,17 @@ class Commands extends WP_CLI_Command
     public function reIndex($args, $assoc_args)
     {
         list($indexName) = $args;
+
+        // index all registred instances
+        if($assoc_args['all']) {
+            foreach ($this->instance->registered_post_types as $key => $registered_post_type) {
+                WP_CLI::line(sprintf("Start indexing '%s'...", $registered_post_type->get_post_type()));
+                $registered_post_type->cli_reindex();
+            }
+
+            // Then should stop command here
+            return;
+        }
 
         // get registered post type
         $indexInstance = $this->get_registered_post_type($indexName);
