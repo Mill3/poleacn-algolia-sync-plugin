@@ -138,8 +138,10 @@ class AlgoliaIndex
 
         // append extra taxonomies
         foreach ($this->index_settings['taxonomies'] as $key => $taxonomy) {
-            $terms = wp_get_post_terms($post->ID, $taxonomy, array('fields' => 'names'));
-            $data[$taxonomy] = $terms;
+            $terms = wp_get_post_terms($post->ID, $taxonomy);
+            foreach ($terms as $key => $term) {
+                $data[$taxonomy][$key] = join([$term->term_order, $term->name], '|');
+            }
         }
 
         // save object
