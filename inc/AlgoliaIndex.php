@@ -103,10 +103,16 @@ class AlgoliaIndex
             'excerpt'           => $post->post_excerpt ? $this->prepareTextContent($post->post_excerpt) : $this->prepareTextContent($post->post_content, 125),
             'content'           => $this->prepareTextContent($post->post_content),
             'url'               => get_permalink($post->ID),
-            'post_type'         => get_post_type($post->ID)
+            'post_type'         => get_post_type($post->ID),
         );
 
-        // handle extra fields formating per post-type
+        // attach post locale, set to defaults if not set yet
+        if (\function_exists('pll_get_post_language')) {
+            $post_locale = pll_get_post_language($post->ID);
+            $data['locale'] = $post_locale ? $post_locale : pll_default_language('slug');
+        }
+
+        // handle extra all fields formating this post-type
         if(method_exists($this->instance, 'extraFields')) {
             $data = $this->instance->extraFields($data, $post->ID, $this->log);
         }
@@ -140,7 +146,7 @@ class AlgoliaIndex
         foreach ($this->index_settings['taxonomies'] as $key => $taxonomy) {
             $terms = wp_get_post_terms($post->ID, $taxonomy);
             foreach ($terms as $key => $term) {
-                $data[$taxonomy][$key] = join([$term->term_order, $term->name], '|');
+                $data[$taxonomy][$key] = $term->name;
             }
         }
 

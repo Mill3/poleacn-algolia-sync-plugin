@@ -24,8 +24,6 @@ abstract class RegisterAbstract
 
     public $index_settings;
 
-    public $locale;
-
     private $log;
 
     public function __construct($post_type, $index_name_base, $algolia_client, $index_settings = null)
@@ -35,7 +33,6 @@ abstract class RegisterAbstract
         $this->index_name_base = $index_name_base;
         $this->algolia_client = $algolia_client;
         $this->index_settings = $index_settings;
-        $this->locale = null;
 
         // create a logger
         $this->log = new Logger($index_name_base);
@@ -304,24 +301,6 @@ abstract class RegisterAbstract
     }
 
     /**
-     * Set index name while adding a post language code.
-     * This way we can have an index per locale for the same post-type
-     *
-     * @param int $post_ID
-     *
-     * @return string
-     */
-    private function set_index_name($post_ID)
-    {
-        if (\function_exists('pll_get_post_language')) {
-            $post_locale = pll_get_post_language($post_ID);
-            $this->locale = $post_locale ? $post_locale : pll_default_language('slug');
-        }
-
-        return implode('_', array($this->index_name_base, $this->locale));
-    }
-
-    /**
      * Algolia index operation class,
      * An instance created each time its needed in this class
      *
@@ -331,7 +310,7 @@ abstract class RegisterAbstract
      */
     private function algolia_index($post_ID)
     {
-        return new \WpAlgolia\AlgoliaIndex($this->set_index_name($post_ID), $this->algolia_client, $this->index_settings, $this->log, $this);
+        return new \WpAlgolia\AlgoliaIndex($this->index_name_base, $this->algolia_client, $this->index_settings, $this->log, $this);
     }
 
     /**
@@ -366,9 +345,8 @@ abstract class RegisterAbstract
      *
      * @return null
      */
-    public function cli_set_settings($locale = 'fr') {
-        $index_name = implode('_', array($this->index_name_base, $locale));
-        $this->algolia_index($index_name)->init_index(true);
+    public function cli_set_settings() {
+        $this->algolia_index($this->index_name_base)->init_index(true);
     }
 
 }

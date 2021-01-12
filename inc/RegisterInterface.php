@@ -32,6 +32,6 @@ interface RegisterInterface
 
     public function cli_reindex();
 
-    public function cli_set_settings($locale);
+    public function cli_set_settings();
 
 }
